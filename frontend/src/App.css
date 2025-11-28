@@ -1,0 +1,865 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+  background: radial-gradient(circle at top, #1f2937 0, #020617 55%);
+  color: #e5e7eb;
+}
+
+.app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 2.5rem;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.3);
+  backdrop-filter: blur(10px);
+  background: linear-gradient(
+    90deg,
+    rgba(15, 23, 42, 0.95),
+    rgba(30, 64, 175, 0.9)
+  );
+  box-shadow: 0 18px 35px rgba(15, 23, 42, 0.6);
+  z-index: 10;
+}
+
+.app-header h1 {
+  margin: 0;
+  font-size: 1.4rem;
+  letter-spacing: 0.04em;
+}
+
+.app-header p {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #9ca3af;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.8rem;
+}
+
+.env-pill {
+  padding: 0.25rem 0.6rem;
+  border-radius: 999px;
+  border: 1px solid rgba(96, 165, 250, 0.6);
+  color: #bfdbfe;
+  background: rgba(15, 23, 42, 0.7);
+}
+
+.timestamp {
+  color: #cbd5f5;
+}
+
+/* Layout */
+
+.app-body {
+  display: flex;
+  flex: 1;
+  height: calc(100vh - 72px);
+}
+
+/* Sidebar */
+
+.sidebar {
+  width: 220px;
+  padding: 1.5rem 1rem;
+  border-right: 1px solid rgba(31, 41, 55, 0.9);
+  background: radial-gradient(circle at top left, #020617, #020617 55%);
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.menu-item {
+  border: none;
+  border-radius: 0.7rem;
+  padding: 0.7rem 0.8rem;
+  text-align: left;
+  background: transparent;
+  color: #9ca3af;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.18s ease-out;
+}
+
+.menu-item:hover {
+  background: rgba(148, 163, 184, 0.1);
+  color: #e5e7eb;
+}
+
+.menu-item.active {
+  background: linear-gradient(135deg, #1d4ed8, #38bdf8);
+  color: #f9fafb;
+  box-shadow: 0 14px 30px rgba(37, 99, 235, 0.45);
+}
+
+/* Main panel */
+
+.main-panel {
+  flex: 1;
+  padding: 1.5rem 2rem 2rem;
+  overflow-y: auto;
+}
+
+/* Cards */
+
+.cards-row {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.kpi-card {
+  background: radial-gradient(circle at top left, #1e293b, #020617 60%);
+  border-radius: 1rem;
+  padding: 0.9rem 1rem;
+  box-shadow: 0 18px 35px rgba(15, 23, 42, 0.8);
+  border: 1px solid rgba(148, 163, 184, 0.4);
+}
+
+.kpi-card.warning {
+  border-color: rgba(250, 204, 21, 0.7);
+}
+
+.kpi-card.danger {
+  border-color: rgba(248, 113, 113, 0.9);
+}
+
+.kpi-title {
+  font-size: 0.8rem;
+  color: #9ca3af;
+  margin-bottom: 0.2rem;
+}
+
+.kpi-value {
+  font-size: 1.4rem;
+  font-weight: 600;
+  margin-bottom: 0.1rem;
+}
+
+.kpi-subtitle {
+  font-size: 0.75rem;
+  color: #6b7280;
+}
+
+/* Charts */
+
+.charts-row {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.chart-card {
+  background: radial-gradient(circle at top left, #020617, #020617 65%);
+  border-radius: 1rem;
+  padding: 0.9rem 1rem;
+  box-shadow: 0 18px 35px rgba(15, 23, 42, 0.9);
+  border: 1px solid rgba(55, 65, 81, 0.9);
+  display: flex;
+  flex-direction: column;
+}
+
+.chart-title {
+  font-size: 0.85rem;
+  color: #9ca3af;
+  margin-bottom: 0.4rem;
+}
+
+.chart-body {
+  flex: 1;
+}
+
+.empty-msg {
+  font-size: 0.8rem;
+  color: #6b7280;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+
+/* Tables */
+
+.section-subtitle {
+  font-size: 0.8rem;
+  color: #9ca3af;
+  margin-top: 0.1rem;
+  margin-bottom: 0.6rem;
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8rem;
+  background: rgba(15, 23, 42, 0.85);
+  border-radius: 0.8rem;
+  overflow: hidden;
+  box-shadow: 0 14px 30px rgba(15, 23, 42, 0.8);
+  margin-top: 0.6rem;
+}
+
+.data-table thead {
+  background: rgba(30, 64, 175, 0.8);
+}
+
+.data-table th,
+.data-table td {
+  padding: 0.45rem 0.7rem;
+  text-align: left;
+}
+
+.data-table th {
+  font-weight: 500;
+}
+
+.data-table tbody tr:nth-child(even) {
+  background: rgba(15, 23, 42, 0.9);
+}
+
+.data-table tbody tr:hover {
+  background: rgba(55, 65, 81, 0.9);
+}
+
+/* Status / mensagens */
+
+.status-box {
+  padding: 0.7rem 0.9rem;
+  border-radius: 0.7rem;
+  background: rgba(30, 64, 175, 0.2);
+  border: 1px solid rgba(59, 130, 246, 0.7);
+  font-size: 0.85rem;
+  margin-bottom: 1rem;
+}
+
+.status-box.error {
+  background: rgba(185, 28, 28, 0.1);
+  border-color: rgba(248, 113, 113, 0.9);
+}
+
+/* Responsivo básico */
+
+@media (max-width: 1100px) {
+  .cards-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .charts-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 800px) {
+  .app-body {
+    flex-direction: column;
+  }
+  .sidebar {
+    flex-direction: row;
+    overflow-x: auto;
+    width: 100%;
+  }
+  .main-panel {
+    padding: 1rem;
+  }
+  .charts-row {
+    grid-template-columns: 1fr;
+  }
+  .cards-row {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* Painel de Alertas IA */
+
+.alerts-row {
+  margin-top: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.alerts-header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  margin-bottom: 0.75rem;
+}
+
+.alerts-header h3 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.alerts-subtitle {
+  font-size: 0.8rem;
+  color: #9ca3af;
+}
+
+.alerts-cards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.alert-card {
+  flex: 1;
+  min-width: 220px;
+  background: linear-gradient(135deg, #020617, #020617);
+  border-radius: 0.75rem;
+  padding: 0.9rem 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 1px solid rgba(148, 163, 184, 0.3);
+}
+
+.alert-alta {
+  border-color: rgba(234, 179, 8, 0.6);
+}
+
+.alert-media {
+  border-color: rgba(59, 130, 246, 0.6);
+}
+
+.alert-danger {
+  border-color: rgba(239, 68, 68, 0.8);
+}
+
+.alert-main {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.alert-value {
+  font-size: 1.4rem;
+  font-weight: 700;
+}
+
+.alert-label {
+  font-size: 0.9rem;
+}
+
+.alert-description {
+  font-size: 0.75rem;
+  color: #9ca3af;
+}
+
+.alert-cta {
+  border: none;
+  border-radius: 999px;
+  padding: 0.35rem 0.9rem;
+  font-size: 0.75rem;
+  cursor: pointer;
+  background: #0ea5e9;
+  color: #f9fafb;
+  transition: background 0.2s, transform 0.1s;
+}
+
+.alert-cta:hover {
+  background: #38bdf8;
+  transform: translateY(-1px);
+}
+
+/* ================================================================= */
+/* PLANNING BOARD IA™                                                */
+/* ================================================================= */
+
+.planning-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.planning-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+
+.planning-chip {
+  font-size: 0.8rem;
+  padding: 0.3rem 0.8rem;
+  border-radius: 999px;
+  border: 1px solid rgba(148, 163, 184, 0.4);
+  background: rgba(15, 23, 42, 0.8);
+}
+
+.planning-board {
+  display: grid;
+  grid-template-columns: 260px 1.6fr 1fr;
+  gap: 1rem;
+  align-items: flex-start;
+}
+
+/* Coluna esquerda – lista de materiais */
+
+.planning-left {
+  background: radial-gradient(circle at top left, #020617, #020617);
+  border-radius: 0.75rem;
+  padding: 0.75rem;
+  border: 1px solid rgba(148, 163, 184, 0.3);
+  max-height: 430px;
+  overflow-y: auto;
+}
+
+.planning-left-title {
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.planning-material-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.planning-material-item {
+  padding: 0.45rem 0.55rem;
+  border-radius: 0.6rem;
+  cursor: pointer;
+  border: 1px solid transparent;
+  background: rgba(15, 23, 42, 0.7);
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.planning-material-item:hover {
+  border-color: rgba(148, 163, 184, 0.6);
+}
+
+.planning-material-item.active {
+  border-color: #38bdf8;
+  background: rgba(15, 23, 42, 0.95);
+}
+
+.material-main {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.material-code {
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.material-badge {
+  font-size: 0.7rem;
+  padding: 0.1rem 0.45rem;
+  border-radius: 999px;
+}
+
+.material-badge-high {
+  background: rgba(239, 68, 68, 0.15);
+  color: #fecaca;
+}
+
+.material-badge-medium {
+  background: rgba(234, 179, 8, 0.15);
+  color: #facc15;
+}
+
+.material-badge-low {
+  background: rgba(34, 197, 94, 0.15);
+  color: #bbf7d0;
+}
+
+.material-meta {
+  font-size: 0.7rem;
+  color: #9ca3af;
+}
+
+/* Coluna central – gráfico e resumo */
+
+.planning-center {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.planning-material-summary {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.75rem;
+  background: rgba(15, 23, 42, 0.9);
+  border-radius: 0.75rem;
+  padding: 0.6rem 0.8rem;
+  border: 1px solid rgba(148, 163, 184, 0.3);
+}
+
+.summary-label {
+  font-size: 0.7rem;
+  color: #9ca3af;
+}
+
+.summary-value {
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.planning-chart-card {
+  background: rgba(15, 23, 42, 0.95);
+  border-radius: 0.75rem;
+  padding: 0.75rem 0.9rem;
+  border: 1px solid rgba(148, 163, 184, 0.3);
+}
+
+.planning-note {
+  margin-top: 0.4rem;
+  font-size: 0.7rem;
+  color: #9ca3af;
+}
+
+/* Coluna direita – recomendações IA */
+
+.planning-right {
+  background: radial-gradient(circle at top, #020617, #020617);
+  border-radius: 0.75rem;
+  padding: 0.75rem;
+  border: 1px solid rgba(148, 163, 184, 0.3);
+  max-height: 430px;
+  overflow-y: auto;
+}
+
+.planning-right-title {
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.ia-suggestions-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.ia-suggestion-card {
+  border-radius: 0.6rem;
+  padding: 0.55rem 0.6rem;
+  font-size: 0.78rem;
+  background: rgba(15, 23, 42, 0.9);
+  border: 1px solid rgba(148, 163, 184, 0.3);
+}
+
+.ia-suggestion-high {
+  border-color: rgba(239, 68, 68, 0.9);
+}
+
+.ia-suggestion-medium {
+  border-color: rgba(234, 179, 8, 0.8);
+}
+
+.ia-suggestion-low {
+  border-color: rgba(34, 197, 94, 0.7);
+}
+
+.ia-suggestion-title {
+  font-weight: 600;
+  margin-bottom: 0.15rem;
+}
+
+.ia-suggestion-body {
+  color: #e5e7eb;
+}
+
+.ia-suggestion-when {
+  margin-top: 0.2rem;
+  font-size: 0.7rem;
+  color: #9ca3af;
+}
+
+/* Responsivo Planning Board */
+
+@media (max-width: 1200px) {
+  .planning-board {
+    grid-template-columns: 240px 1.5fr 1fr;
+  }
+}
+
+@media (max-width: 900px) {
+  .planning-board {
+    grid-template-columns: 1fr;
+  }
+  .planning-left,
+  .planning-right {
+    max-height: none;
+  }
+  .planning-material-summary {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.ia-insights-panel {
+  margin-top: 0.75rem;
+  padding: 0.75rem 1rem;
+  border-radius: 10px;
+  background: linear-gradient(90deg, rgba(56, 189, 248, 0.12), rgba(15, 23, 42, 0.9));
+  border: 1px solid rgba(56, 189, 248, 0.4);
+  color: #e5e7eb;
+  font-size: 0.85rem;
+}
+
+.ia-insights-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.35rem;
+}
+
+.ia-insights-pill {
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: rgba(59, 130, 246, 0.25);
+  color: #bfdbfe;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.ia-insights-title {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #e5e7eb;
+}
+
+.ia-insights-list {
+  margin: 0;
+  padding-left: 1.1rem;
+}
+
+.ia-insights-list li {
+  margin-bottom: 0.15rem;
+  line-height: 1.4;
+}
+
+/* ===========================================================
+   PADRONIZAÇÃO GERAL – TÍTULOS, LABELS IA E ESPAÇOS
+   (overrides suaves, aplicados depois do tema atual)
+   =========================================================== */
+
+/* --------- Títulos e subtítulos --------- */
+
+.app-header h1 {
+  font-size: 1.6rem;
+  margin: 0;
+}
+
+.app-header p {
+  font-size: 0.85rem;
+  opacity: 0.85;
+  margin: 0.15rem 0 0;
+}
+
+/* Títulos das seções principais */
+.main-panel h2 {
+  font-size: 1.25rem;
+  margin: 0 0 0.25rem 0;
+}
+
+/* Subtítulos “linha fina” abaixo do h2 */
+.section-subtitle {
+  font-size: 0.85rem;
+  opacity: 0.8;
+  margin-top: 0.1rem;
+  margin-bottom: 1rem;
+}
+
+/* Títulos menores dentro de cards/seções (h3) */
+.main-panel h3 {
+  font-size: 1.05rem;
+  margin-bottom: 0.35rem;
+}
+
+/* --------- Cards padrão (KPI, gráficos, alertas) --------- */
+
+.kpi-card,
+.chart-card,
+.alert-card,
+.status-box {
+  border-radius: 14px;
+}
+
+/* Espaçamento vertical mais consistente entre blocos */
+.cards-row,
+.charts-row,
+.alerts-row,
+.planning-section,
+.pegging-summary-row {
+  margin-bottom: 1.5rem;
+}
+
+/* --------- Badges / Labels IA (criticidade, etc.) --------- */
+
+.material-badge,
+.pegging-badge,
+.ia-label {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.15rem 0.55rem;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+/* Níveis de criticidade – alto / médio / baixo */
+.material-badge-high,
+.pegging-badge-high,
+.ia-badge-high {
+  background: rgba(239, 68, 68, 0.16);   /* vermelho suave */
+  color: #fecaca;
+  border: 1px solid #ef4444;
+}
+
+.material-badge-medium,
+.pegging-badge-medium,
+.ia-badge-medium {
+  background: rgba(234, 179, 8, 0.16);   /* amarelo suave */
+  color: #fef3c7;
+  border: 1px solid #eab308;
+}
+
+.material-badge-low,
+.pegging-badge-low,
+.ia-badge-low {
+  background: rgba(34, 197, 94, 0.14);   /* verde suave */
+  color: #bbf7d0;
+  border: 1px solid #22c55e;
+}
+
+/* --------- Capacity IA – destaque do gargalo --------- */
+
+.capacity-resource-card {
+  border-radius: 14px;
+}
+
+/* caso você tenha aplicado essa classe no card do gargalo */
+.capacity-resource-card.gargalo {
+  border: 1px solid #ef4444;
+  box-shadow: 0 0 0 1px rgba(239, 68, 68, 0.45);
+}
+
+/* --------- Planejamento IA – reduzir espaço morto --------- */
+
+.planning-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;              /* controla a distância entre blocos internos */
+  padding-bottom: 1.5rem;
+}
+
+/* Tira excesso de margem de dentro do PlanningBoard/Capacity/Pegging */
+.planning-section > *:last-child {
+  margin-bottom: 0;
+}
+
+/* Deixa o gráfico do Planning IA usar mais largura em telas grandes */
+@media (min-width: 1200px) {
+  .planning-section .planning-chart-wrapper,
+  .planning-section .planning-main-grid {
+    max-width: 100%;
+  }
+}
+
+/* ===========================================================
+   UPGRADES VISUAIS – hover glow, ícones, progresso, rodapé
+   =========================================================== */
+
+/* --------- Hover glow nos cards --------- */
+
+.kpi-card,
+.chart-card,
+.alert-card {
+  transition: transform 0.15s ease-out, box-shadow 0.15s ease-out,
+    border-color 0.15s ease-out;
+}
+
+.kpi-card:hover,
+.chart-card:hover,
+.alert-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 22px rgba(15, 23, 42, 0.35);
+  border-color: rgba(148, 163, 184, 0.6);
+}
+
+/* --------- Ícones do menu lateral --------- */
+
+.sidebar .menu-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.menu-icon {
+  font-size: 1.1rem;
+  opacity: 0.9;
+}
+
+/* --------- Barra de progresso nos KPIs --------- */
+
+.kpi-progress {
+  margin-top: 0.4rem;
+  width: 100%;
+  height: 6px;
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.7);
+  overflow: hidden;
+}
+
+.kpi-progress-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #22c55e, #eab308, #f97316);
+}
+
+/* --------- Rodapé institucional --------- */
+
+.app-footer {
+  margin-top: 0.75rem;
+  padding: 0.6rem 1.5rem;
+  border-top: 1px solid rgba(148, 163, 184, 0.35);
+  font-size: 0.8rem;
+  color: #cbd5f5;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: radial-gradient(
+      circle at top left,
+      rgba(56, 189, 248, 0.12),
+      transparent 55%
+    ),
+    radial-gradient(
+      circle at top right,
+      rgba(168, 85, 247, 0.12),
+      transparent 55%
+    );
+}
+
+.app-footer strong {
+  font-weight: 600;
+}
+
+.footer-separator {
+  margin: 0 0.5rem;
+  opacity: 0.55;
+}
+
