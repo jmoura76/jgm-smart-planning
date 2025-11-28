@@ -1,0 +1,294 @@
+{
+  "generated_at": "2025-11-26T18:54:31.082024",
+  "kpis": {
+    "total_materiais": 619,
+    "materiais_risco": 52,
+    "materiais_excesso": 544,
+    "total_ops": 3504,
+    "ops_atrasadas": 1757
+  },
+  "criticos": [
+    {
+      "Material": "4014282C9VREV-AA",
+      "Denominação": "VOLANTE SINT MUFU GM GEM",
+      "CoberEstq.": -175.0
+    },
+    {
+      "Material": "4014470S15-AA",
+      "Denominação": "CINTO SEG CBSTB FR DIR",
+      "CoberEstq.": -157.0
+    },
+    {
+      "Material": "4014469S15-AA",
+      "Denominação": "CINTO SEG CBSTB FR ESQ",
+      "CoberEstq.": -79.0
+    },
+    {
+      "Material": "4014262M87-AA",
+      "Denominação": "CJ CAPA ARO VOL PESPONTO GM GEM",
+      "CoberEstq.": -42.0
+    },
+    {
+      "Material": "4014485C9VREV-AA",
+      "Denominação": "VOLANTE PU MUFU GM G1NC",
+      "CoberEstq.": -39.0
+    },
+    {
+      "Material": "4014505D6UREV-AA",
+      "Denominação": "VOLANTE SIT MUFU GM G1NCM",
+      "CoberEstq.": -39.0
+    },
+    {
+      "Material": "4014002BHWREV-AA",
+      "Denominação": "CJ TAMPA CJ TOY 397D PP/ ABS/ PA6 GF45/",
+      "CoberEstq.": -26.0
+    },
+    {
+      "Material": "4014411ECJ-AA",
+      "Denominação": "VOLANTE SINT MUFU MCM MY26",
+      "CoberEstq.": -17.3
+    },
+    {
+      "Material": "4012847-AD",
+      "Denominação": "ESTRUTURA VOLANTE VW POLO CUV",
+      "CoberEstq.": -13.9
+    },
+    {
+      "Material": "4009950-AG",
+      "Denominação": "ESTRUTURA VOLANTE TYT 640A",
+      "CoberEstq.": -12.8
+    },
+    {
+      "Material": "4014471-AA",
+      "Denominação": "ETIQ IDENTI CINTO SEGURANCA NISSAN P02H",
+      "CoberEstq.": -12.0
+    },
+    {
+      "Material": "4013935JN7REV-AA",
+      "Denominação": "CINTO SEG DIAN ESQUERD CFR C/TRAV EMERG",
+      "CoberEstq.": -10.0
+    },
+    {
+      "Material": "3142136-AB",
+      "Denominação": "CJ ESTRUTURA VOLANTE RE X1312",
+      "CoberEstq.": -9.0
+    },
+    {
+      "Material": "4000444-AA",
+      "Denominação": "ESTRUTURA VOLANTE PACCAR PETERBILT",
+      "CoberEstq.": -9.0
+    },
+    {
+      "Material": "4009202Y63REV-AC",
+      "Denominação": "VOLANTE COURO MUFU STL 326NC",
+      "CoberEstq.": -9.0
+    },
+    {
+      "Material": "4007568EXP-AA",
+      "Denominação": "ESTRUTURA VOLANTE TYT 326A",
+      "CoberEstq.": -8.0
+    },
+    {
+      "Material": "4013490-AA",
+      "Denominação": "ESTRUTURA VOLANTE HYD BR2",
+      "CoberEstq.": -8.0
+    },
+    {
+      "Material": "4012842-AC",
+      "Denominação": "ESTRUTURA VOLANTE MAN P25",
+      "CoberEstq.": -6.0
+    },
+    {
+      "Material": "4010432-AA",
+      "Denominação": "ESTRUTURA VOLANTE MBB FREIGHTLING",
+      "CoberEstq.": -5.0
+    },
+    {
+      "Material": "4014363REV-AA",
+      "Denominação": "AIRBAG CORTINA ESQ GM JBSC4",
+      "CoberEstq.": -4.0
+    }
+  ],
+  "ordens_criticas": [
+    {
+      "Ordem": 100001976486,
+      "Material": "4007923-AB",
+      "Centro": 3101,
+      "Data de conclusão base": "2025-11-01",
+      "Texto breve material": "ESTOJO INJETADO AIRBAG PAB VW",
+      "Status do sistema": "ENTE MATF CAPC ERRD NOAP ORSL SEXT",
+      "days_late": 25
+    },
+    {
+      "Ordem": 100001979038,
+      "Material": "4007923-AB",
+      "Centro": 3101,
+      "Data de conclusão base": "2025-11-01",
+      "Texto breve material": "ESTOJO INJETADO AIRBAG PAB VW",
+      "Status do sistema": "ENTE MATF CAPC ERRD NOAP ORSL SEXT",
+      "days_late": 25
+    },
+    {
+      "Ordem": 100001979045,
+      "Material": "4010953-AA",
+      "Centro": 3101,
+      "Data de conclusão base": "2025-11-03",
+      "Texto breve material": "VOLANTE PU MAN PHEVOS",
+      "Status do sistema": "ENTE MATF CAPC ERRD NOAP ORSL SEXT",
+      "days_late": 23
+    },
+    {
+      "Ordem": 100001989518,
+      "Material": "4014178CUN-AA",
+      "Centro": 3101,
+      "Data de conclusão base": "2025-11-04",
+      "Texto breve material": "AIRBAG MOTORISTA STL 2810MCA",
+      "Status do sistema": "ENTE MATF CONF FORN CAPC EXPL MOME NOAP*",
+      "days_late": 22
+    },
+    {
+      "Ordem": 100001989886,
+      "Material": "4013594BKB-AD",
+      "Centro": 3101,
+      "Data de conclusão base": "2025-11-04",
+      "Texto breve material": "VOLANTE PU MUFU HYD BR2",
+      "Status do sistema": "LIB  CONF FORN CAPC EXPL MOME MatC NOAP*",
+      "days_late": 22
+    },
+    {
+      "Ordem": 100001989888,
+      "Material": "4014365-AA",
+      "Centro": 3101,
+      "Data de conclusão base": "2025-11-04",
+      "Texto breve material": "AIRBAG CORTINA ESQ GM JBJC4",
+      "Status do sistema": "LIB  CONF CAPC FRNP MOME MatC NOAP ORSL*",
+      "days_late": 22
+    },
+    {
+      "Ordem": 100001990213,
+      "Material": "4013089-AG",
+      "Centro": 3101,
+      "Data de conclusão base": "2025-11-05",
+      "Texto breve material": "AIRBAG PASSAGEIRO VW 270",
+      "Status do sistema": "ENTE CONF FORN CAPC MOME MatC NOAP ORSL*",
+      "days_late": 21
+    },
+    {
+      "Ordem": 100001990316,
+      "Material": "2556657116-AE",
+      "Centro": 3101,
+      "Data de conclusão base": "2025-11-05",
+      "Texto breve material": "VOLANTE DET INJETADO PU STL 551MCA   ",
+      "Status do sistema": "ENTE MATF CNPA FORN CAPC MOME NOAP ORSL*",
+      "days_late": 21
+    },
+    {
+      "Ordem": 100001990290,
+      "Material": "1168346BKB-AK",
+      "Centro": 3101,
+      "Data de conclusão base": "2025-11-05",
+      "Texto breve material": "CJ FECHO AH SIMPLES FR DIR HYD",
+      "Status do sistema": "ENTE CNPA FORN CAPC MOME MatC NOAP ORSL*",
+      "days_late": 21
+    },
+    {
+      "Ordem": 100001990421,
+      "Material": "4009954483-AB",
+      "Centro": 3101,
+      "Data de conclusão base": "2025-11-05",
+      "Texto breve material": "REVEST VOL DIR INF TOY 640A PP INJ 201B",
+      "Status do sistema": "ENTE CONF FORN CAPC MOME MatC NOAP ORSL*",
+      "days_late": 21
+    },
+    {
+      "Ordem": 100001990263,
+      "Material": "4012467-AA",
+      "Centro": 3101,
+      "Data de conclusão base": "2025-11-05",
+      "Texto breve material": "VOLANTE DET INJETADO PU GM GEM",
+      "Status do sistema": "ENTE CNPA FORN CAPC MOME MatC NOAP ORSL*",
+      "days_late": 21
+    },
+    {
+      "Ordem": 100001990124,
+      "Material": "4014363-AA",
+      "Centro": 3101,
+      "Data de conclusão base": "2025-11-05",
+      "Texto breve material": "AIRBAG CORTINA ESQ GM JBSC4",
+      "Status do sistema": "LIB  CONF CAPC FRNP MOME MatC NOAP ORSL*",
+      "days_late": 21
+    },
+    {
+      "Ordem": 100001990277,
+      "Material": "4013893BVU-AC",
+      "Centro": 3101,
+      "Data de conclusão base": "2025-11-05",
+      "Texto breve material": "VOLANTE DET INJETADO PU STL 2810 MY24",
+      "Status do sistema": "ENTE CONF FORN CAPC MOME MatC NOAP ORSL*",
+      "days_late": 21
+    },
+    {
+      "Ordem": 100001990315,
+      "Material": "2571221116-AA",
+      "Centro": 3101,
+      "Data de conclusão base": "2025-11-05",
+      "Texto breve material": "VOLANTE DET INJETADO PU STL 551MCA HOD",
+      "Status do sistema": "ENTE CNPA FORN CAPC MOME MatC NOAP ORSL*",
+      "days_late": 21
+    },
+    {
+      "Ordem": 100001990322,
+      "Material": "4010123483-AC",
+      "Centro": 3101,
+      "Data de conclusão base": "2025-11-05",
+      "Texto breve material": "COBERTURA DAB INJ TYT 640A",
+      "Status do sistema": "ENTE CONF FORN CAPC MOME MatC NOAP ORSL*",
+      "days_late": 21
+    },
+    {
+      "Ordem": 100001990269,
+      "Material": "4013722P10-AB",
+      "Centro": 3101,
+      "Data de conclusão base": "2025-11-05",
+      "Texto breve material": "VOLANTE DET INJETADO PU GM GEM",
+      "Status do sistema": "ENTE MATF CONF FORN CAPC MOME NOAP ORSL*",
+      "days_late": 21
+    },
+    {
+      "Ordem": 100001993829,
+      "Material": "4013721P10-AB",
+      "Centro": 3101,
+      "Data de conclusão base": "2025-11-05",
+      "Texto breve material": "VOLANTE PU MUFU GM GEM",
+      "Status do sistema": "LIB  MATF CONF FORN CAPC MOME NOAP ORSL*",
+      "days_late": 21
+    },
+    {
+      "Ordem": 100001979046,
+      "Material": "4010953-AA",
+      "Centro": 3101,
+      "Data de conclusão base": "2025-11-05",
+      "Texto breve material": "VOLANTE PU MAN PHEVOS",
+      "Status do sistema": "ENTE MATF CAPC ERRD NOAP ORSL SEXT",
+      "days_late": 21
+    },
+    {
+      "Ordem": 100001990272,
+      "Material": "4011840N21-AB",
+      "Centro": 3101,
+      "Data de conclusão base": "2025-11-05",
+      "Texto breve material": "VOLANTE PU VW POLO",
+      "Status do sistema": "ENTE MATF CONF FORN CAPC MOME NOAP ORSL*",
+      "days_late": 21
+    },
+    {
+      "Ordem": 100001990237,
+      "Material": "4013708-AA",
+      "Centro": 3101,
+      "Data de conclusão base": "2025-11-05",
+      "Texto breve material": "AIRBAG CORTINA DIR GM G1NC",
+      "Status do sistema": "LIB  CONF CAPC FRNP MOME MatC NOAP ORSL*",
+      "days_late": 21
+    }
+  ]
+}
