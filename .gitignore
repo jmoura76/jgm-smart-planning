@@ -1,17 +1,11 @@
-# Node / React
+﻿# Python
+backend/__pycache__/
+backend/*.pyc
+backend/venv/
+
+# Node
 frontend/node_modules/
 frontend/build/
 
-# Python
-backend/__pycache__/
-backend/.pytest_cache/
-venv/
-
-# VSCode / IDE
-.vscode/
-.idea/
-
-# Arquivos de ambiente
+# Outros
 .env
-frontend/.env
-backend/.env

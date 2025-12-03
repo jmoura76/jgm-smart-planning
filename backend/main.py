@@ -1,41 +1,52 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-import uvicorn
 
+# Routers do projeto
 from upload_routes import router as upload_router
 from dashboard_routes import router as dashboard_router
 from planning_routes import router as planning_router
 
-
 app = FastAPI(
-    title="JGM SmartPlanning - Wave 1",
-    description="Backend inicial do projeto SmartPlanning da JGM.",
-    version="0.1",
+    title="JGM SmartPlanning API",
+    description="Backend oficial do projeto SmartPlanning™ da JGM.",
+    version="1.0.0",
 )
 
-# --------------------------------------------------------------------
-# CORS – permite o frontend React acessar a API
-# --------------------------------------------------------------------
+# ----------------------------------------------------------
+# CORS – necessário para o React consumir a API
+# ----------------------------------------------------------
+origins = [
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+    "https://localhost:3000",
+    # Depois vamos colocar aqui o domínio final do Amplify
+]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],        # em produção você pode restringir
+    allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# --------------------------------------------------------------------
-# ROTAS
-# --------------------------------------------------------------------
-app.include_router(upload_router)
-app.include_router(dashboard_router)
-app.include_router(planning_router)   # <- novo router do Planning Board IA™
+# ----------------------------------------------------------
+# HEALTHCHECK – importante p/ Render e CI/CD
+# ----------------------------------------------------------
+@app.get("/health")
+def health():
+    return {"status": "ok"}
 
+# ----------------------------------------------------------
+# ROTAS OFICIAIS DO PROJETO
+# ----------------------------------------------------------
+app.include_router(upload_router, prefix="/upload")
+app.include_router(dashboard_router, prefix="/dashboard")
+app.include_router(planning_router, prefix="/planning")
 
+# ----------------------------------------------------------
+# ROOT – teste rápido
+# ----------------------------------------------------------
 @app.get("/")
 def root():
     return {"message": "SmartPlanning API - Online"}
-
-
-if __name__ == "__main__":
-    uvicorn.run(app, host="127.0.0.1", port=8000)
