@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
-from datetime import datetime, date
+from datetime import datetime, date, timedelta
 import pandas as pd
 import numpy as np
 import os
@@ -77,7 +77,7 @@ class ResourceIaInsight(BaseModel):
     planta: str | None = None
     utilizacao_pct: float
     criticidade_score: float | None = None
-    categoria: str          # p.ex. "gargalo", "alto", "equilibrado", "ociosidade"
+    categoria: str  # p.ex. "gargalo", "alto", "equilibrado", "ociosidade"
     recomendacao_curta: str
 
 
@@ -105,30 +105,133 @@ class DashboardSummary(BaseModel):
 
 
 # --------------------------------------------------------------------
+# DEMO DATA – usado quando não há arquivos reais
+# --------------------------------------------------------------------
+
+
+def _create_md04_demo_df() -> pd.DataFrame:
+    """
+    Cria um MD04 fictício mas realista, para a DEMO, quando não existir arquivo.
+    Só precisa das colunas usadas no cálculo de cobertura.
+    """
+    materiais = [
+        "401003EXP-AB",
+        "401004EXP-AB",
+        "401005EXP-AB",
+        "401006EXP-AB",
+        "401007EXP-AB",
+        "401008EXP-AB",
+        "401009EXP-AB",
+        "401010EXP-AB",
+        "401011EXP-AB",
+        "401012EXP-AB",
+        "401013EXP-AB",
+        "401014EXP-AB",
+    ]
+    # Cobertura em dias – mistura de risco, normal e excesso
+    coberturas = [3, 5, 8, 12, 20, 55, 60, 2, 6, 30, 48, 90]
+
+    df = pd.DataFrame(
+        {
+            "Material": materiais,
+            "CoberEstq": coberturas,
+        }
+    )
+    return df
+
+
+def _create_cohv_demo_df() -> pd.DataFrame:
+    """
+    Cria um COHV fictício para a DEMO, com algumas ordens atrasadas.
+    """
+    today = date.today()
+    base_dates = [
+        today - timedelta(days=10),
+        today - timedelta(days=5),
+        today - timedelta(days=2),
+        today + timedelta(days=3),
+        today + timedelta(days=7),
+        today - timedelta(days=20),
+        today + timedelta(days=15),
+        today - timedelta(days=1),
+        today + timedelta(days=30),
+        today - timedelta(days=15),
+    ]
+
+    ordens = [f"000{i:06d}" for i in range(1, len(base_dates) + 1)]
+    materiais = [
+        "401003EXP-AB",
+        "401004EXP-AB",
+        "401005EXP-AB",
+        "401006EXP-AB",
+        "401007EXP-AB",
+        "401008EXP-AB",
+        "401009EXP-AB",
+        "401010EXP-AB",
+        "401011EXP-AB",
+        "401012EXP-AB",
+    ]
+    status_list = [
+        "CRTD",
+        "REL",
+        "REL",
+        "REL",
+        "CRTD",
+        "REL",
+        "CRTD",
+        "REL",
+        "CRTD",
+        "REL",
+    ]
+
+    df = pd.DataFrame(
+        {
+            "Ordem": ordens,
+            "Material": materiais,
+            "Data de conclusão base": [d.strftime("%d.%m.%Y") for d in base_dates],
+            "Status do sistema": status_list,
+        }
+    )
+    return df
+
+
+# --------------------------------------------------------------------
 # FUNÇÕES AUXILIARES DE CARGA
 # --------------------------------------------------------------------
 
 
 def _load_md04_df() -> pd.DataFrame:
-    """Carrega o MD04 salvo no data/, tratando NaN."""
+    """
+    Carrega o MD04 salvo no data/.
+    - Se existir arquivo => usa o arquivo real.
+    - Se NÃO existir => usa um MD04 DEMO fictício (não quebra o dashboard).
+    """
     file_path = os.path.join(DATA_DIR, MD04_FILENAME)
-    if not os.path.exists(file_path):
-        raise HTTPException(
-            status_code=400, detail="Arquivo MD04 ainda não foi carregado."
-        )
+    if os.path.exists(file_path):
+        df = pd.read_excel(file_path)
+        df = df.replace({np.nan: None})
+        return df
 
-    df = pd.read_excel(file_path)
+    # DEMO
+    df = _create_md04_demo_df()
     df = df.replace({np.nan: None})
     return df
 
 
 def _load_cohv_df() -> pd.DataFrame | None:
-    """Carrega o COHV salvo no data/. Se não existir, retorna None (para não quebrar o dashboard)."""
+    """
+    Carrega o COHV salvo no data/.
+    - Se existir arquivo => usa o arquivo real.
+    - Se NÃO existir => usa um COHV DEMO fictício.
+    """
     file_path = os.path.join(DATA_DIR, COHV_FILENAME)
-    if not os.path.exists(file_path):
-        return None
+    if os.path.exists(file_path):
+        df = pd.read_excel(file_path)
+        df = df.replace({np.nan: None})
+        return df
 
-    df = pd.read_excel(file_path)
+    # DEMO
+    df = _create_cohv_demo_df()
     df = df.replace({np.nan: None})
     return df
 
@@ -137,7 +240,7 @@ def _load_centros_df() -> pd.DataFrame | None:
     """
     Carrega o arquivo de Centros de Trabalho salvo como CSV.
     Se não conseguir ler (encoding estranho, etc.), retorna None
-    para não quebrar o dashboard.
+    para não quebrar o dashboard (e o código usa DEMO interno).
     """
     file_path = os.path.join(DATA_DIR, CENTROS_FILENAME)
     if not os.path.exists(file_path):
@@ -621,15 +724,15 @@ def _classificar_recurso_capacidade(
 
 @router.get("/summary", response_model=DashboardSummary)
 def get_dashboard_summary():
-    # MD04 é obrigatório
+    # MD04 agora NUNCA quebra: se não existir arquivo real, usa DEMO
     df_md04 = _load_md04_df()
     materiais_info = _build_material_kpis(df_md04)
 
-    # COHV é opcional
+    # COHV: se não existir arquivo, usamos DEMO
     df_cohv = _load_cohv_df()
     ordens_info = _build_orders_kpis(df_cohv)
 
-    # Centros de Trabalho (capacidade) também opcional
+    # Centros de Trabalho (capacidade) – DEMO já está embutido em _build_capacity_kpis
     df_centros = _load_centros_df()
     capacidade_summary, recursos_criticos = _build_capacity_kpis(df_centros)
 
