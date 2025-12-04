@@ -4,13 +4,13 @@ from datetime import datetime, date, timedelta
 import pandas as pd
 import numpy as np
 
-from ia_engine import (
+from .ia_engine import (
     score_material_criticidade,
     score_order_criticidade,
 )
 
 # Reutilizamos as funções de carga e utilidades do dashboard
-from dashboard_routes import (
+from .dashboard_routes import (
     _load_md04_df,
     _load_cohv_df,
     _find_column,
