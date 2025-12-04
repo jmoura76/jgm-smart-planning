@@ -1,4 +1,6 @@
 // src/config.js
-const API_BASE = process.env.REACT_APP_API_BASE || "http://18.230.154.138:8000";
+const API_BASE =
+  process.env.REACT_APP_API_API_BASE ||
+  "https://jgm-smartplanning-api.onrender.com";
 
 export default API_BASE;
