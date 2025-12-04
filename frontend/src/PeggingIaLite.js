@@ -1,7 +1,8 @@
 // frontend/src/PeggingIaLite.js
 import React, { useState } from "react";
+import { API_BASE_URL } from "./config";
 
-const API_BASE = "http://127.0.0.1:8000";
+const API_BASE = API_BASE_URL;
 
 function PeggingIaLite() {
   const [materialInput, setMaterialInput] = useState("4011835-AA");
@@ -36,7 +37,7 @@ function PeggingIaLite() {
       setError("");
       setResult(null);
 
-      // 3) Chamada ao backend (mantenha o endpoint que você já usa)
+      // 3) Chamada ao backend
       const resp = await fetch(
         `${API_BASE}/pegging/ia-lite?material=${encodeURIComponent(code)}`
       );

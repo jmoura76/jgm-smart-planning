@@ -9,8 +9,9 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
+import { API_BASE_URL } from "./config";
 
-const API_BASE = "http://127.0.0.1:8000";
+const API_BASE = API_BASE_URL;
 
 function CapacityIa() {
   const [data, setData] = useState(null);
@@ -22,7 +23,8 @@ function CapacityIa() {
       try {
         setLoading(true);
         setError("");
-        const resp = await fetch(`${API_BASE}/capacity/ia`);
+        // Endpoint correto no backend: /dashboard/capacity/ia
+        const resp = await fetch(`${API_BASE}/dashboard/capacity/ia`);
         if (!resp.ok) {
           throw new Error(`Erro ao buscar capacidade (${resp.status})`);
         }
@@ -71,15 +73,14 @@ function CapacityIa() {
     recursos_acima_100,
     recursos_abaixo_90,
     recursos_90_100,
-    recursos = [],
-    insights = [],
+    insights = [], // lista de ResourceIaInsight vinda do backend
     recomendacoes_gerais = [],
   } = data;
 
   // ------------------------------------------------------------------
   // Ordena recursos por utilização (maior → menor) para gráfico + cards
   // ------------------------------------------------------------------
-  const sortedResources = [...recursos].sort(
+  const sortedResources = [...insights].sort(
     (a, b) => (b.utilizacao_pct ?? 0) - (a.utilizacao_pct ?? 0)
   );
 

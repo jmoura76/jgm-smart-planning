@@ -1,3 +1,4 @@
+// frontend/src/PlanningBoardIa.js
 import React, { useEffect, useState } from "react";
 import {
   ComposedChart,
@@ -10,9 +11,9 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
+import { API_BASE_URL } from "./config";
 
-const API_BASE = "http://127.0.0.1:8000";
-
+const API_BASE = API_BASE_URL;
 const DEFAULT_MATERIAL = "4011835-AA";
 
 function PlanningBoardIa() {
@@ -22,13 +23,17 @@ function PlanningBoardIa() {
   const [error, setError] = useState("");
 
   const loadBoard = async (code) => {
-    if (!code) return;
+    const cleanCode = code?.trim();
+    if (!cleanCode) return;
 
     try {
       setLoadingBoard(true);
       setError("");
 
-      const resp = await fetch(`${API_BASE}/planning/board/${code}`);
+      // Endpoint correto no backend
+      const resp = await fetch(
+        `${API_BASE}/planning/planning/board/${encodeURIComponent(cleanCode)}`
+      );
       if (!resp.ok) {
         throw new Error(`Erro ao buscar Planning Board (${resp.status})`);
       }
@@ -51,7 +56,7 @@ function PlanningBoardIa() {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!materialCode) return;
-    loadBoard(materialCode.trim());
+    loadBoard(materialCode);
   };
 
   // Monta dados para o gráfico de linha do tempo
@@ -184,43 +189,50 @@ function PlanningBoardIa() {
                 Estoque x Demanda x Produção – linha do tempo IA
               </div>
               <div className="chart-body">
-                <ResponsiveContainer width="100%" height={320}>
-                  <ComposedChart data={chartData}>
-                    <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                    <XAxis dataKey="semana" />
-                    <YAxis />
-                    <Tooltip />
-                    <Legend />
-                    <Bar
-                      dataKey="demanda"
-                      name="Demanda"
-                      fill="#f97316"
-                      barSize={16}
-                    />
-                    <Bar
-                      dataKey="producao_ia"
-                      name="Produção planejada (OPs)"
-                      fill="#a855f7"
-                      barSize={16}
-                    />
-                    <Line
-                      type="monotone"
-                      dataKey="estoque_natural"
-                      name="Estoque natural"
-                      stroke="#38bdf8"
-                      strokeWidth={2}
-                      dot={{ r: 3 }}
-                    />
-                    <Line
-                      type="monotone"
-                      dataKey="estoque_pos_ia"
-                      name="Estoque pós-ação IA"
-                      stroke="#22c1c3"
-                      strokeWidth={2}
-                      dot={{ r: 3 }}
-                    />
-                  </ComposedChart>
-                </ResponsiveContainer>
+                {chartData.length === 0 ? (
+                  <div className="empty-msg">
+                    Nenhuma série de dados foi retornada pela IA para este
+                    material.
+                  </div>
+                ) : (
+                  <ResponsiveContainer width="100%" height={320}>
+                    <ComposedChart data={chartData}>
+                      <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                      <XAxis dataKey="semana" />
+                      <YAxis />
+                      <Tooltip />
+                      <Legend />
+                      <Bar
+                        dataKey="demanda"
+                        name="Demanda"
+                        fill="#f97316"
+                        barSize={16}
+                      />
+                      <Bar
+                        dataKey="producao_ia"
+                        name="Produção planejada (OPs)"
+                        fill="#a855f7"
+                        barSize={16}
+                      />
+                      <Line
+                        type="monotone"
+                        dataKey="estoque_natural"
+                        name="Estoque natural"
+                        stroke="#38bdf8"
+                        strokeWidth={2}
+                        dot={{ r: 3 }}
+                      />
+                      <Line
+                        type="monotone"
+                        dataKey="estoque_pos_ia"
+                        name="Estoque pós-ação IA"
+                        stroke="#22c1c3"
+                        strokeWidth={2}
+                        dot={{ r: 3 }}
+                      />
+                    </ComposedChart>
+                  </ResponsiveContainer>
+                )}
               </div>
               <div className="planning-note">
                 *Simulação baseada nas séries calculadas pelo IA Engine™ com
