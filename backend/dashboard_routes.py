@@ -454,13 +454,12 @@ def _build_orders_kpis(df_cohv: pd.DataFrame | None):
             and "CLSD" not in status_str
         )
 
-    # calcula flag booleana
+    # cria coluna booleana corretamente
     df_valid["atrasada"] = df_valid.apply(is_atrasada, axis=1)
 
-    # >>> CORREÇÃO AQUI <<<
-    # filtra usando a coluna booleana (sem "is True")
-    df_atrasadas = df_valid[df_valid["atrasada"] == True]
-    # ou df_atrasadas = df_valid[df_valid["atrasada"]]
+    # AQUI estava o bug: usar a Series como máscara, não "is True"
+    mask_atrasada = df_valid["atrasada"] == True
+    df_atrasadas = df_valid[mask_atrasada]
 
     ops_atrasadas = int(len(df_atrasadas))
     perc_ops_atrasadas = round(ops_atrasadas / total_ops * 100, 2)
