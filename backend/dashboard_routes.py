@@ -6,7 +6,8 @@ import numpy as np
 import os
 import re
 
-from ia_engine import (
+# IMPORT CORRIGIDO PARA FUNCIONAR EM PRODUÇÃO (PACOTE backend)
+from .ia_engine import (
     score_material_criticidade,
     score_order_criticidade,
     score_recurso_criticidade,  # <- nome correto em português
@@ -69,6 +70,7 @@ class CriticalResource(BaseModel):
     planta: str | None = None
     utilizacao_pct: float
     criticidade_score: float | None = None
+
 
 class ResourceIaInsight(BaseModel):
     recurso: str
@@ -228,6 +230,7 @@ def _normalize_centros_header(df: pd.DataFrame) -> pd.DataFrame:
 # LÓGICA DE KPI DE ESTOQUE / COBERTURA (MD04)
 # --------------------------------------------------------------------
 
+
 def _build_material_kpis(df_md04: pd.DataFrame):
     col_material = _find_column(df_md04, ["Material", "material"])
     col_cobertura = _find_column(
@@ -351,7 +354,7 @@ def _build_orders_kpis(df_cohv: pd.DataFrame | None):
         )
 
     df_valid["atrasada"] = df_valid.apply(is_atrasada, axis=1)
-    df_atrasadas = df_valid[df_valid["atrasada"] == True]
+    df_atrasadas = df_valid[df_valid["atrasada"] is True]
 
     ops_atrasadas = int(len(df_atrasadas))
     perc_ops_atrasadas = round(ops_atrasadas / total_ops * 100, 2)
@@ -402,6 +405,7 @@ def _build_orders_kpis(df_cohv: pd.DataFrame | None):
 # --------------------------------------------------------------------
 # LÓGICA DE KPI DE CAPACIDADE (CENTROS DE TRABALHO)
 # --------------------------------------------------------------------
+
 
 def _build_capacity_kpis(
     df_centros: pd.DataFrame | None,
@@ -465,60 +469,6 @@ def _build_capacity_kpis(
         )
 
         return capacidade_summary, recursos_criticos
-
-# --------------------------------------------------------------------
-# IA DE CAPACIDADE – CLASSIFICAÇÃO POR RECURSO
-# --------------------------------------------------------------------
-
-
-def _classificar_recurso_capacidade(
-    utilizacao_pct: float,
-    criticidade_score: float | None = None,
-) -> tuple[str, str]:
-    """
-    Classifica o recurso em categorias de capacidade e devolve uma recomendação curta.
-
-    categorias:
-      - "gargalo"       → claramente sobrecarregado
-      - "alto"          → alta utilização, atenção
-      - "equilibrado"   → faixa saudável
-      - "ociosidade"    → capacidade ociosa
-    """
-
-    u = float(utilizacao_pct)
-    score = float(criticidade_score) if criticidade_score is not None else None
-
-    # Regras simples, mas "com cara de IA"
-    if u >= 115:
-        categoria = "gargalo"
-        recomendacao = (
-            "Avaliar turno extra, realocar ordens para centros alternativos "
-            "ou revisar capacidade declarada (calendário / carga padrão)."
-        )
-    elif u >= 100:
-        categoria = "alto"
-        recomendacao = (
-            "Manter este recurso como foco nas reuniões de curto prazo (D-1 / semana), "
-            "ajustando sequência e priorização de ordens."
-        )
-    elif u <= 70:
-        categoria = "ociosidade"
-        recomendacao = (
-            "Verificar oportunidades de transferir mix de produtos para este recurso "
-            "ou reduzir capacidade declarada para otimizar custos."
-        )
-    else:
-        categoria = "equilibrado"
-        recomendacao = (
-            "Recurso em faixa saudável. Manter monitoramento na rotina S&OP/MPS "
-            "e usar como referência para balanceamento com outros centros."
-        )
-
-    # Se houver um score de criticidade muito alto, reforça o tom
-    if score is not None and score >= 80 and categoria in ("gargalo", "alto"):
-        recomendacao += " Priorizar análise detalhada deste centro na próxima reunião."
-
-    return categoria, recomendacao
 
     # ----------------------------------------------------------
     # 2) CENÁRIO REAL: temos arquivo de Centros de Trabalho
@@ -608,83 +558,60 @@ def _classificar_recurso_capacidade(
 
     return capacidade_summary, recursos_criticos
 
-    # ----------------------------------------------------------
-    # 2) CENÁRIO REAL: temos arquivo de Centros de Trabalho
-    # ----------------------------------------------------------
-    df_centros = _normalize_centros_header(df_centros)
-    if df_centros is None or df_centros.empty:
-        return None, []
 
-    col_recurso = _find_column(
-        df_centros, ["Recurso", "Work Center", "Centro de trabalho"]
-    )
+# --------------------------------------------------------------------
+# IA DE CAPACIDADE – CLASSIFICAÇÃO POR RECURSO
+# --------------------------------------------------------------------
 
-    try:
-        col_planta = _find_column(
-            df_centros, ["Unidade gerencial", "Centro", "Plant"]
+
+def _classificar_recurso_capacidade(
+    utilizacao_pct: float,
+    criticidade_score: float | None = None,
+) -> tuple[str, str]:
+    """
+    Classifica o recurso em categorias de capacidade e devolve uma recomendação curta.
+
+    categorias:
+      - "gargalo"       → claramente sobrecarregado
+      - "alto"          → alta utilização, atenção
+      - "equilibrado"   → faixa saudável
+      - "ociosidade"    → capacidade ociosa
+    """
+
+    u = float(utilizacao_pct)
+    score = float(criticidade_score) if criticidade_score is not None else None
+
+    # Regras simples, mas "com cara de IA"
+    if u >= 115:
+        categoria = "gargalo"
+        recomendacao = (
+            "Avaliar turno extra, realocar ordens para centros alternativos "
+            "ou revisar capacidade declarada (calendário / carga padrão)."
         )
-    except HTTPException:
-        col_planta = None
-
-    col_util = _find_column(
-        df_centros,
-        [
-            "Grau utilização em %",
-            "Utilização %",
-            "Utilização em %",
-            "Capacity usage %",
-        ],
-    )
-
-    cols = [col_recurso, col_util] + ([col_planta] if col_planta else [])
-    df = df_centros[cols].copy()
-
-    df[col_util] = pd.to_numeric(df[col_util], errors="coerce")
-    df = df.dropna(subset=[col_util])
-
-    if df.empty:
-        return None, []
-
-    total_recursos = int(len(df))
-    recursos_abaixo_90 = int((df[col_util] < 90).sum())
-    recursos_90_100 = int(((df[col_util] >= 90) & (df[col_util] <= 100)).sum())
-    recursos_acima_100 = int((df[col_util] > 100).sum())
-
-    utilizacao_media_val = df[col_util].mean()
-    utilizacao_media = (
-        round(float(utilizacao_media_val), 1)
-        if pd.notna(utilizacao_media_val)
-        else None
-    )
-
-    df_top = df.sort_values(by=col_util, ascending=False).head(10)
-
-    recursos_criticos: list[CriticalResource] = []
-    for _, row in df_top.iterrows():
-        util_val = float(row[col_util])
-        score = score_recurso_criticidade(util_val)  # <- aqui também
-        recursos_criticos.append(
-            CriticalResource(
-                recurso=str(row[col_recurso]),
-                planta=(
-                    str(row[col_planta])
-                    if col_planta and row.get(col_planta) is not None
-                    else None
-                ),
-                utilizacao_pct=util_val,
-                criticidade_score=score,
-            )
+    elif u >= 100:
+        categoria = "alto"
+        recomendacao = (
+            "Manter este recurso como foco nas reuniões de curto prazo (D-1 / semana), "
+            "ajustando sequência e priorização de ordens."
+        )
+    elif u <= 70:
+        categoria = "ociosidade"
+        recomendacao = (
+            "Verificar oportunidades de transferir mix de produtos para este recurso "
+            "ou reduzir capacidade declarada para otimizar custos."
+        )
+    else:
+        categoria = "equilibrado"
+        recomendacao = (
+            "Recurso em faixa saudável. Manter monitoramento na rotina S&OP/MPS "
+            "e usar como referência para balanceamento com outros centros."
         )
 
-    capacidade_summary = CapacitySummary(
-        total_recursos=total_recursos,
-        recursos_abaixo_90=recursos_abaixo_90,
-        recursos_90_100=recursos_90_100,
-        recursos_acima_100=recursos_acima_100,
-        utilizacao_media=utilizacao_media,
-    )
+    # Se houver um score de criticidade muito alto, reforça o tom
+    if score is not None and score >= 80 and categoria in ("gargalo", "alto"):
+        recomendacao += " Priorizar análise detalhada deste centro na próxima reunião."
 
-    return capacidade_summary, recursos_criticos
+    return categoria, recomendacao
 
 
 # --------------------------------------------------------------------
@@ -725,6 +652,7 @@ def get_dashboard_summary():
         capacidade=capacidade_summary,
         recursos_criticos=recursos_criticos,
     )
+
 
 # --------------------------------------------------------------------
 # ENDPOINT – IA DE CAPACIDADE
@@ -809,4 +737,3 @@ def get_capacity_ia():
         insights=insights,
         recomendacoes_gerais=recomendacoes_gerais,
     )
-
