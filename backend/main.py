@@ -19,7 +19,7 @@ origins = [
     "http://localhost:3000",
     "http://127.0.0.1:3000",
     "https://localhost:3000",
-    # Depois vamos colocar aqui o domínio final do Amplify
+    "https://main.d2emdliuimy7ux.amplifyapp.com",
 ]
 
 app.add_middleware(
