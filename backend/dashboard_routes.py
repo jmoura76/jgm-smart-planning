@@ -619,7 +619,7 @@ def _classificar_recurso_capacidade(
 # --------------------------------------------------------------------
 
 
-@router.get("/dashboard/summary", response_model=DashboardSummary)
+@router.get("/summary", response_model=DashboardSummary)
 def get_dashboard_summary():
     # MD04 é obrigatório
     df_md04 = _load_md04_df()
