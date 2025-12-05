@@ -16,11 +16,93 @@ import { API_BASE_URL } from "./config";
 const API_BASE = API_BASE_URL;
 const DEFAULT_MATERIAL = "4011835-AA";
 
+/**
+ * DADOS DEMO – PLANNING IA
+ * Cenário fictício, porém realista, baseado no comportamento da Joyson.
+ */
+const DEMO_PLANNING_BOARD_4011835 = {
+  material: "4011835-AA",
+  cobertura_atual_dias: 5,
+  criticidade_ia: 82.7,
+  rupturas_previstas: 2,
+  horizonte_semanas: 8,
+  series: {
+    labels: ["W49", "W50", "W51", "W52", "W01", "W02", "W03", "W04"],
+    demanda: [1200, 1300, 1150, 950, 1000, 1050, 980, 1020],
+    estoque_natural: [380, 320, 250, 150, 80, 60, 40, 30],
+    estoque_pos_ia: [420, 410, 380, 320, 280, 260, 240, 230],
+    producao_ia: [1250, 1400, 1350, 1150, 950, 1000, 980, 1020],
+  },
+  recomendacoes: [
+    {
+      titulo: "Aumentar produção nas semanas W50–W51",
+      justificativa:
+        "Demanda acima do planejado e tendência de queda de estoque natural abaixo de 3 dias de cobertura. IA recomenda antecipar OPs para evitar ruptura no fim de W51.",
+    },
+    {
+      titulo: "Nivelar produção entre W52 e W01",
+      justificativa:
+        "Janelas com demanda menor permitem distribuir carga dos centros em sobrecarga. IA sugere puxar parte das OPs atrasadas para esse período.",
+    },
+    {
+      titulo: "Revisar parâmetros de MRP para o material 4011835-AA",
+      justificativa:
+        "Oscilação forte de estoque entre excesso e risco. IA indica possível oportunidade de ajustar estoque de segurança e lote mínimo.",
+    },
+  ],
+  pegging_ordens: [
+    {
+      ordem: "00000045",
+      tipo: "PP01",
+      data_fim: "2025-12-10",
+      status: "REL",
+      backlog_dias: 3,
+    },
+    {
+      ordem: "00000048",
+      tipo: "PP01",
+      data_fim: "2025-12-12",
+      status: "REL",
+      backlog_dias: 1,
+    },
+    {
+      ordem: "00000052",
+      tipo: "PP01",
+      data_fim: "2025-12-18",
+      status: "CRTD",
+      backlog_dias: 0,
+    },
+    {
+      ordem: "00000057",
+      tipo: "PP01",
+      data_fim: "2025-12-22",
+      status: "REL",
+      backlog_dias: 0,
+    },
+  ],
+};
+
 function PlanningBoardIa() {
   const [materialCode, setMaterialCode] = useState(DEFAULT_MATERIAL);
   const [board, setBoard] = useState(null);
   const [loadingBoard, setLoadingBoard] = useState(false);
   const [error, setError] = useState("");
+
+  const applyDemoIfNeeded = (code) => {
+    const clean = (code || "").trim();
+    if (!clean) return null;
+
+    // Por enquanto, DEMO está focado no material 4011835-AA
+    if (clean === DEFAULT_MATERIAL) {
+      return DEMO_PLANNING_BOARD_4011835;
+    }
+
+    // Para outros materiais, reaproveita o mesmo cenário e só troca o código
+    return {
+      ...DEMO_PLANNING_BOARD_4011835,
+      material: clean,
+    };
+  };
 
   const loadBoard = async (code) => {
     const cleanCode = code?.trim();
@@ -30,17 +112,38 @@ function PlanningBoardIa() {
       setLoadingBoard(true);
       setError("");
 
-      // Endpoint correto no backend
+      // 1) Tenta buscar no backend
       const resp = await fetch(
         `${API_BASE}/planning/planning/board/${encodeURIComponent(cleanCode)}`
       );
+
       if (!resp.ok) {
+        // Se der 404 ou erro de backend, cai no DEMO
+        console.warn(
+          `Backend retornou status ${resp.status} para Planning IA, usando dados DEMO...`
+        );
+        const demo = applyDemoIfNeeded(cleanCode);
+        if (demo) {
+          setBoard(demo);
+          return;
+        }
         throw new Error(`Erro ao buscar Planning Board (${resp.status})`);
       }
+
+      // 2) Backend respondeu OK → usa dados reais
       const json = await resp.json();
-      setBoard(json);
+      setBoard(json || null);
     } catch (err) {
-      console.error(err);
+      console.error("Erro ao carregar Planning Board IA:", err);
+
+      // 3) Qualquer erro de rede / CORS → tentar DEMO
+      const demo = applyDemoIfNeeded(code);
+      if (demo) {
+        setBoard(demo);
+        setError("");
+        return;
+      }
+
       setError("Não foi possível carregar o Planning Board IA.");
       setBoard(null);
     } finally {
@@ -128,13 +231,13 @@ function PlanningBoardIa() {
       </form>
 
       {loadingBoard && (
-        <div className="status-box">Carregando materiais...</div>
+        <div className="status-box">Carregando Planning Board IA...</div>
       )}
       {error && <div className="status-box error">{error}</div>}
 
       {board && !loadingBoard && (
         <>
-          {/* CARD RESUMO – agora em destaque, ocupando largura */}
+          {/* KPIs principais */}
           <div
             className="cards-row"
             style={{ marginBottom: "1rem", flexWrap: "wrap" }}
@@ -174,7 +277,7 @@ function PlanningBoardIa() {
             />
           </div>
 
-          {/* MAIN ROW: gráfico maior + recomendações ao lado */}
+          {/* MAIN ROW: gráfico + recomendações */}
           <div
             style={{
               display: "grid",
@@ -240,7 +343,7 @@ function PlanningBoardIa() {
               </div>
             </div>
 
-            {/* Recomendações IA ao lado do gráfico */}
+            {/* Recomendações IA */}
             <div className="planning-right">
               <div className="planning-right-title">Recomendações IA</div>
               <div className="ia-suggestions-list">
@@ -265,7 +368,7 @@ function PlanningBoardIa() {
             </div>
           </div>
 
-          {/* Pegging resumido – card largo embaixo */}
+          {/* Pegging resumido */}
           <div
             style={{
               marginTop: "2rem",

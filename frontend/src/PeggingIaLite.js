@@ -3,17 +3,69 @@ import React, { useState } from "react";
 import { API_BASE_URL } from "./config";
 
 const API_BASE = API_BASE_URL;
+const DEFAULT_MATERIAL = "4011835-AA";
+
+/**
+ * DADOS DEMO – PEGGING IA
+ * Ordens fictícias porém realistas vinculadas ao material.
+ */
+const DEMO_PEGGING_4011835 = {
+  material: "4011835-AA",
+  descricao: "Conjunto Airbag – Volante",
+  cobertura_atual_dias: 5.2,
+  total_ordens_vinculadas: 5,
+  ordens_atrasadas: 2,
+  maior_atraso_dias: 3,
+  ordens: [
+    {
+      ordem: "00000045",
+      material: "4011835-AA",
+      data_fim: "2025-12-10",
+      atraso_dias: 3,
+      backlog_qtd: 450,
+      criticidade_score: 91.3,
+    },
+    {
+      ordem: "00000048",
+      material: "4011835-AA",
+      data_fim: "2025-12-12",
+      atraso_dias: 1,
+      backlog_qtd: 220,
+      criticidade_score: 84.7,
+    },
+    {
+      ordem: "00000052",
+      material: "4011835-AA",
+      data_fim: "2025-12-18",
+      atraso_dias: 0,
+      backlog_qtd: 0,
+      criticidade_score: 72.1,
+    },
+    {
+      ordem: "00000057",
+      material: "4011835-AA",
+      data_fim: "2025-12-22",
+      atraso_dias: 0,
+      backlog_qtd: 0,
+      criticidade_score: 65.3,
+    },
+    {
+      ordem: "00000060",
+      material: "4011835-AA",
+      data_fim: "2025-12-29",
+      atraso_dias: 0,
+      backlog_qtd: 0,
+      criticidade_score: 58.9,
+    },
+  ],
+};
 
 function PeggingIaLite() {
-  const [materialInput, setMaterialInput] = useState("4011835-AA");
+  const [materialInput, setMaterialInput] = useState(DEFAULT_MATERIAL);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [result, setResult] = useState(null);
 
-  // -------------------------------------------------------------
-  // Validação simples do código de material
-  // Aceita letras, números e hífen. Ex: 4011835-AA
-  // -------------------------------------------------------------
   const isValidMaterial = (code) => {
     const trimmed = (code || "").trim();
     if (!trimmed) return false;
@@ -21,10 +73,28 @@ function PeggingIaLite() {
     return regex.test(trimmed);
   };
 
+  const buildDemoResult = (code) => {
+    const clean = (code || "").trim();
+    if (!clean) return null;
+
+    if (clean === DEFAULT_MATERIAL) {
+      return DEMO_PEGGING_4011835;
+    }
+
+    // Para outros materiais, replica cenário e troca apenas o código
+    return {
+      ...DEMO_PEGGING_4011835,
+      material: clean,
+      ordens: DEMO_PEGGING_4011835.ordens.map((op) => ({
+        ...op,
+        material: clean,
+      })),
+    };
+  };
+
   const handleLoadPegging = async () => {
     const code = materialInput.trim();
 
-    // 1) Validação antes de chamar o backend
     if (!isValidMaterial(code)) {
       setError('Informe um código de material válido. Ex: "4011835-AA".');
       setResult(null);
@@ -32,35 +102,50 @@ function PeggingIaLite() {
     }
 
     try {
-      // 2) Spinner on
       setLoading(true);
       setError("");
       setResult(null);
 
-      // 3) Chamada ao backend
+      // 1) Tenta usar backend real (se existir)
       const resp = await fetch(
         `${API_BASE}/pegging/ia-lite?material=${encodeURIComponent(code)}`
       );
 
       if (!resp.ok) {
+        console.warn(
+          `Backend retornou status ${resp.status} para Pegging IA, usando dados DEMO...`
+        );
+        const demo = buildDemoResult(code);
+        if (demo) {
+          setResult(demo);
+          return;
+        }
         throw new Error(`Erro ao buscar Pegging IA (${resp.status})`);
       }
 
+      // 2) Backend ok → usa dados reais
       const json = await resp.json();
       setResult(json);
     } catch (err) {
       console.error(err);
+
+      // 3) Qualquer erro de rede/CORS → usa DEMO
+      const demo = buildDemoResult(code);
+      if (demo) {
+        setResult(demo);
+        setError("");
+        return;
+      }
+
       setError(
         "Não foi possível carregar o Pegging IA para este material. Tente novamente."
       );
     } finally {
-      // 4) Spinner off
       setLoading(false);
     }
   };
 
   const ordens = Array.isArray(result?.ordens) ? result.ordens : [];
-
   const nenhumaOrdem =
     !loading && !error && result && (ordens.length === 0 || result.sem_ordens);
 

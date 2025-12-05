@@ -17,7 +17,9 @@ import IaInsightsPanel from "./IaInsightsPanel";
 import PlanningBoardIa from "./PlanningBoardIa";
 import CapacityIa from "./CapacityIa";
 import PeggingIaLite from "./PeggingIaLite";
-import API_BASE from "./config"; // <<< agora vem do config
+import { API_BASE_URL } from "./config";
+
+const API_BASE = API_BASE_URL;
 
 // ---------------------------------------------------------------------
 // Label customizado para o donut de capacidade (mostra percentual)
@@ -387,7 +389,7 @@ function App() {
                   {criticos.map((item, idx) => (
                     <tr key={idx}>
                       <td>{item.material}</td>
-                      <td>{item.cobertura_dias ?? "-"}</td>
+                      <td>{item.cobertura_dias ?? "-"} </td>
                       <td>
                         {item.criticidade_score !== null &&
                         item.criticidade_score !== undefined

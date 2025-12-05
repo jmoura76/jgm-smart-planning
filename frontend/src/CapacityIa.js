@@ -23,16 +23,21 @@ function CapacityIa() {
       try {
         setLoading(true);
         setError("");
-        // Endpoint correto no backend: /dashboard/capacity/ia
+
+        // Endpoint do backend para capacidade IA
+        // Ex.: GET {API_BASE}/dashboard/capacity/ia
         const resp = await fetch(`${API_BASE}/dashboard/capacity/ia`);
+
         if (!resp.ok) {
-          throw new Error(`Erro ao buscar capacidade (${resp.status})`);
+          throw new Error(`Erro ao buscar capacidade (status ${resp.status})`);
         }
+
         const json = await resp.json();
-        setData(json);
+        setData(json || null);
       } catch (err) {
-        console.error(err);
+        console.error("Erro ao carregar Capacity IA:", err);
         setError("Não foi possível carregar os dados de capacidade da IA.");
+        setData(null);
       } finally {
         setLoading(false);
       }
@@ -68,29 +73,30 @@ function CapacityIa() {
   }
 
   const {
-    total_recursos,
-    utilizacao_media,
-    recursos_acima_100,
-    recursos_abaixo_90,
-    recursos_90_100,
-    insights = [], // lista de ResourceIaInsight vinda do backend
+    total_recursos = 0,
+    utilizacao_media = null,
+    recursos_acima_100 = 0,
+    recursos_abaixo_90 = 0,
+    recursos_90_100 = 0,
+    insights = [],
     recomendacoes_gerais = [],
   } = data;
 
   // ------------------------------------------------------------------
   // Ordena recursos por utilização (maior → menor) para gráfico + cards
   // ------------------------------------------------------------------
-  const sortedResources = [...insights].sort(
-    (a, b) => (b.utilizacao_pct ?? 0) - (a.utilizacao_pct ?? 0)
+  const safeInsights = Array.isArray(insights) ? insights : [];
+  const sortedResources = [...safeInsights].sort(
+    (a, b) => (b?.utilizacao_pct ?? 0) - (a?.utilizacao_pct ?? 0)
   );
 
   const chartData = sortedResources.map((r) => ({
     recurso: r.recurso,
-    utilizacao: r.utilizacao_pct,
+    utilizacao: r.utilizacao_pct ?? 0,
   }));
 
   return (
-    <section>
+    <section className="planning-section">
       <h2>Capacity IA™ – Utilização de Recursos</h2>
       <p className="section-subtitle">
         Visão consolidada de carga x capacidade, com insights de IA para
@@ -156,7 +162,8 @@ function CapacityIa() {
         <div className="chart-card">
           <div className="chart-title">Recomendações gerais da IA</div>
           <div className="chart-body">
-            {recomendacoes_gerais && recomendacoes_gerais.length > 0 ? (
+            {Array.isArray(recomendacoes_gerais) &&
+            recomendacoes_gerais.length > 0 ? (
               <ul className="ia-recommendations-list">
                 {recomendacoes_gerais.map((rec, idx) => (
                   <li key={idx}>{rec}</li>
